@@ -10,7 +10,7 @@ All four TDD implementation phases have been **fully completed** and **100% veri
 
 ### Test Results
 ```text
- RUN  v4.1.10 splendid-lovelace
+ RUN  v4.1.10 css-variable-graph
 
  ✓ src/graph-builder.test.js (10 tests) 6ms
 
