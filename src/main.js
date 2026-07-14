@@ -135,7 +135,8 @@ async function loadScenario(scenario) {
 // Fetch helper with fallback to embedded string
 async function fetchCSS(filename) {
   try {
-    const path = filename.includes('/') ? `/css-examples/${filename}` : `/css-examples/${filename}.css`;
+    const baseUrl = import.meta.env.BASE_URL;
+    const path = filename.includes('/') ? `${baseUrl}css-examples/${filename}` : `${baseUrl}css-examples/${filename}.css`;
     const res = await fetch(path + '?raw');
     if (!res.ok) throw new Error();
     return await res.text();
