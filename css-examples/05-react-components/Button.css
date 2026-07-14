@@ -1,0 +1,8 @@
+.btn {
+  --btn-bg: var(--primary-color);
+  --btn-padding: var(--card-padding, 10px);
+}
+
+.btn-secondary {
+  --btn-bg: var(--card-bg, #eee);
+}

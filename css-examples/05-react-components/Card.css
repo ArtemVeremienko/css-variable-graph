@@ -1,0 +1,5 @@
+.card {
+  --card-bg: var(--bg-color);
+  --card-padding: 20px;
+  --card-text: var(--text-color, #333);
+}

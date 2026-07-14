@@ -1,0 +1,8 @@
+:root {
+  --primary-color: #3498db;
+  --bg-color: #ffffff;
+}
+
+.theme-dark {
+  --bg-color: #1e1e1e;
+}

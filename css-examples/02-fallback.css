@@ -1,0 +1,4 @@
+:root {
+  --bg-color: var(--theme-bg, #ffffff);
+  --text-color: var(--theme-text, var(--primary-color, black));
+}

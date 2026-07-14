@@ -1,0 +1,5 @@
+:root {
+  --var-a: var(--var-b);
+  --var-b: var(--var-c);
+  --var-c: var(--var-a);
+}

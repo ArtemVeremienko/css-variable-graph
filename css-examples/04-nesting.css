@@ -1,0 +1,13 @@
+:root {
+  --font-size: 16px;
+  --padding: var(--spacing);
+}
+
+.card {
+  --spacing: 12px;
+  --card-font-size: var(--font-size);
+}
+
+.card-active {
+  --spacing: 16px;
+}

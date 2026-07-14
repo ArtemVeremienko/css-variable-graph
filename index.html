@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS Variable Graph Builder Sandbox</title>
+  <!-- Modern Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-base: #0f172a;
+      --bg-card: rgba(30, 41, 59, 0.7);
+      --bg-card-hover: rgba(30, 41, 59, 0.9);
+      --border-color: rgba(255, 255, 255, 0.1);
+      
+      --color-primary: #3b82f6;
+      --color-primary-hover: #2563eb;
+      --color-success: #10b981;
+      --color-success-bg: rgba(16, 185, 129, 0.15);
+      --color-danger: #ef4444;
+      --color-danger-bg: rgba(239, 68, 68, 0.15);
+      --color-warning: #f59e0b;
+      --color-warning-bg: rgba(245, 158, 11, 0.15);
+      --color-text-main: #f8fafc;
+      --color-text-muted: #94a3b8;
+      
+      --font-sans: 'Outfit', sans-serif;
+      --font-mono: 'Fira Code', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--color-text-main);
+      font-family: var(--font-sans);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    header {
+      background: linear-gradient(180deg, rgba(15, 23, 42, 1) 0%, rgba(15, 23, 42, 0.8) 100%);
+      border-bottom: 1px solid var(--border-color);
+      padding: 1.2rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(8px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo-container h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      background: linear-gradient(to right, #3b82f6, #8b5cf6, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.2rem;
+    }
+
+    .logo-container p {
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .tdd-terminal-note {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      background: rgba(255, 255, 255, 0.05);
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .tdd-terminal-note code {
+      font-family: var(--font-mono);
+      color: var(--color-primary);
+      background: rgba(0, 0, 0, 0.2);
+      padding: 0.1rem 0.3rem;
+      border-radius: 4px;
+    }
+
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      padding: 1.5rem;
+      gap: 1.2rem;
+      height: calc(100vh - 75px);
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* Tabs for selecting example files */
+    .tab-bar {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.5rem;
+    }
+
+    .tab {
+      background: none;
+      border: none;
+      color: var(--color-text-muted);
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      font-family: var(--font-sans);
+      font-weight: 500;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .tab:hover {
+      color: var(--color-text-main);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .tab.active {
+      color: var(--color-primary);
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: 450px 1fr;
+      gap: 1.5rem;
+      overflow: hidden;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .card-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      backdrop-filter: blur(12px);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .panel-header {
+      padding: 1rem 1.2rem;
+      border-bottom: 1px solid var(--border-color);
+      background: rgba(255, 255, 255, 0.01);
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--color-text-main);
+    }
+
+    .card-body {
+      flex: 1;
+      padding: 1rem;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .css-editor-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .css-editor {
+      width: 100%;
+      flex: 1;
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: #38bdf8; /* light blue */
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      padding: 1rem;
+      resize: none;
+      line-height: 1.5;
+      outline: none;
+    }
+
+    .css-editor:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+
+    /* Sub-file tabs for React component simulation */
+    .file-subtabs {
+      display: flex;
+      gap: 0.25rem;
+      margin-bottom: 0.5rem;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 0.25rem;
+      border-radius: 6px;
+    }
+
+    .file-subtab {
+      background: none;
+      border: none;
+      color: var(--color-text-muted);
+      padding: 0.3rem 0.6rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+    }
+
+    .file-subtab.active {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--color-text-main);
+    }
+
+    /* Visualizer Canvas */
+    .canvas-container {
+      flex: 1;
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    #network-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .canvas-overlay {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border-color);
+      padding: 0.5rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+      pointer-events: none;
+    }
+
+    /* Inspector & Scope Path */
+    .inspector-panel {
+      margin-top: 1rem;
+      background: rgba(15, 23, 42, 0.3);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.8rem;
+    }
+
+    .scope-selector-container {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.8rem;
+      flex-wrap: wrap;
+    }
+
+    .scope-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--color-text-muted);
+    }
+
+    .scope-badge-container {
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .scope-badge {
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: var(--color-primary);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+      cursor: pointer;
+    }
+
+    .scope-badge.active {
+      background: var(--color-primary);
+      color: white;
+    }
+
+    .inspector-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.8rem;
+    }
+
+    .inspector-item {
+      font-size: 0.85rem;
+    }
+
+    .inspector-label {
+      color: var(--color-text-muted);
+      font-weight: 500;
+      margin-bottom: 0.2rem;
+    }
+
+    .inspector-val {
+      font-family: var(--font-mono);
+      background: rgba(0, 0, 0, 0.2);
+      padding: 0.4rem;
+      border-radius: 4px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .inspector-val.success {
+      color: var(--color-success);
+    }
+    
+    .inspector-val.warning {
+      color: var(--color-warning);
+    }
+
+    /* Warning overlay when code is broken */
+    .build-error-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.9);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+      text-align: center;
+      z-index: 10;
+    }
+
+    .build-error-overlay h3 {
+      color: var(--color-danger);
+      margin-bottom: 0.8rem;
+    }
+
+    .build-error-overlay p {
+      color: var(--color-text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+      max-width: 400px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo-container">
+      <h1>CSS Variable Graph Builder Sandbox</h1>
+      <p>Interactive Graph Visualizer Playground</p>
+    </div>
+    <div class="header-actions">
+      <div class="tdd-terminal-note">
+        <span>TDD Runner active in terminal:</span>
+        <code>npm run test</code>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Tabs for selecting example files -->
+    <nav class="tab-bar" id="scenario-tabs">
+      <button class="tab active" data-scenario="01-simple">1. Simple</button>
+      <button class="tab" data-scenario="02-fallback">2. Fallback</button>
+      <button class="tab" data-scenario="03-cycles">3. Cycles</button>
+      <button class="tab" data-scenario="04-nesting">4. Nesting</button>
+      <button class="tab" data-scenario="05-react-components">5. React Components</button>
+    </nav>
+
+    <div class="workspace-grid">
+      <!-- CSS Editor / Viewer -->
+      <div class="card-panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+            CSS Input Code
+          </div>
+        </div>
+        <div class="card-body">
+          <!-- Sub tabs visible only for react components -->
+          <div class="file-subtabs" id="subfile-tabs" style="display: none;">
+            <button class="file-subtab active" data-file="Theme.css">Theme.css</button>
+            <button class="file-subtab" data-file="Card.css">Card.css</button>
+            <button class="file-subtab" data-file="Button.css">Button.css</button>
+            <button class="file-subtab" data-file="Combined">Combined Graph View</button>
+          </div>
+          <div class="css-editor-container">
+            <textarea class="css-editor" id="css-textarea" placeholder="Enter CSS here..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dependency Visualizer -->
+      <div class="card-panel" style="position: relative;">
+        <div class="panel-header">
+          <div class="panel-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3zM6 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3z"/><path d="M18 8H6M18 16H6"/></svg>
+            Dependency Graph
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="canvas-container">
+            <div id="network-canvas"></div>
+            <div class="canvas-overlay">Scroll to zoom • Drag to pan • Drag nodes</div>
+            
+            <!-- Build Error Screen overlay if JS fails -->
+            <div id="build-error-screen" class="build-error-overlay" style="display: none;">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <h3 id="build-error-title">Implementation Error</h3>
+              <p id="build-error-message">You need to implement the graph builder algorithm in src/graph-builder.js to draw the graph.</p>
+            </div>
+          </div>
+
+          <!-- Scope selector and inspection -->
+          <div class="inspector-panel">
+            <div class="scope-selector-container">
+              <span class="scope-title">Simulated Element DOM Path:</span>
+              <div class="scope-badge-container" id="scope-path-badges">
+                <!-- Badges will be generated here -->
+              </div>
+            </div>
+            
+            <div class="inspector-details">
+              <div class="inspector-item">
+                <div class="inspector-label">Selected Node Name</div>
+                <div class="inspector-val" id="inspect-node-name">-</div>
+              </div>
+              <div class="inspector-item">
+                <div class="inspector-label">Defined Selector</div>
+                <div class="inspector-val" id="inspect-node-selector">-</div>
+              </div>
+              <div class="inspector-item">
+                <div class="inspector-label">Raw Value</div>
+                <div class="inspector-val" id="inspect-node-raw">-</div>
+              </div>
+              <div class="inspector-item">
+                <div class="inspector-label">Computed Value (in active scope)</div>
+                <div class="inspector-val success" id="inspect-node-resolved">-</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Setup the module script for Vite to load -->
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
